@@ -5,7 +5,7 @@ from chemblmltools import chembl_activity_target
 from chemblmltools import ChemblMoleculeSampler
 
 # Set BASE_PATH to the base directory where all the model data will be stored
-BASE_PATH = os.path.expanduser('~/models_eskape')
+BASE_PATH = os.path.expanduser('~/models')
 
 # If the data is large, in a pilot modeling phase we may wish to build models with a sample of the data.
 # To do that, change DATASET_SIZE_LIMIT to the desired maximum value, e.g. 2000 or 5000
