@@ -1,8 +1,23 @@
 #!/bin/bash
+# Call the zairachem command, redirect logs, and write a line into "runs.csv"
+#
+# Requirements:
+#     - ZairaChem must be installed - therefore conda environment "zairachem" exists.
+#     - Subdirectories "input", "model", "test" and "log" must exist in the current directory.
+#     - Depending on the command, the files "input/input.csv", "input/train.csv" or "input/test.csv" must exist.
+#
+# Examples of use:
+#     bash test.sh split similarity
+#     bash test.sh fit
+#     bash test.sh fit --lazy
+#     bash test.sh predict
+
 command="$1"
 option="$2"
 
+eval DIR_MODEL_RUNS_LOG="~/models"  # Where to store the runs log
 VALID_COMMANDS='["split", "fit", "predict"]'
+
 if [[ $VALID_COMMANDS =~ "\"$command\"" ]]
 then
     # Command is valid
@@ -26,8 +41,9 @@ then
 
     printf -v ts_end '%(%Y%m%d_%H%M)T' -1  # Get current datetime in yymmdd_hhmm format
     echo "Finished zairachem $command - exit code $exit_code - $ts_end"
-    # Write in log
-    echo `pwd`,$command,$ts_start,$ts_end,$exit_code >> ~/models_runs/runs.csv
+    # Write a line in runs log
+    mkdir -p $DIR_MODEL_RUNS_LOG
+    echo `pwd`,$command,$ts_start,$ts_end,$exit_code >>$DIR_MODEL_RUNS_LOG/runs.csv
 else
     # Command is not valid
     echo "Error - the valid commands are $VALID_COMMANDS"
