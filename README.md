@@ -53,14 +53,17 @@ password `aaa` has read access to the tables of ChEMBL. This can be changed in p
 This file has two columns:
 
 - **pathogen_code**: Choose a short code to identify the pathogen, alphanumeric only, **without spaces**. Example: "efaecium".
-- **search_text**: A search string, case insensitive, to search for the pathogen name in the ORGANISM field in the ChEMBL database. This may require some trial and error. Example: "Enterococcus Faecium".
+- **search_text**: A search string, *case insensitive*, to search for the pathogen name in the `organism` field 
+in the ChEMBL database. Example: "Enterococcus Faecium".
 
 3. Run the program `create_datasets.py`
 ```
-python code/create_datasets.py
+cd code
+python create_datasets.py
 ```
 
-This will create the required directory structure under the base path (`~/models`). In the subdirectory of each model there is an `input` subdirectory. The input dataset for that model will be created there.
+This will create the required directory structure under the base path (`~/models`). In the subdirectory of each model 
+there is an `input` subdirectory. The input dataset for that model will be created there.
 
 This will also generate the file `model_metadata/dataset.csv` containing a list of all the datasets and their counts.
 
