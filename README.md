@@ -11,7 +11,7 @@ This process has been developed in Ubuntu Linux. For other environments, it may 
 
 The installation instructions assume you have Ubuntu Linux, and that the conda package manager is installed.
 
-## Installation required for part 1 (dataset generation)
+## Installation required for part 1 (create datasets)
 
 1. Clone this repository (https://github.com/ersilia-os/antimicrobial_ml_tasks.git)
 
@@ -33,9 +33,7 @@ mkdir ~/models
 ```
 Note: If you prefer to use a different directory, just edit it in the variable `BASE_PATH` in the program `code/create_datasets.py`.
 
-5. By default, the program `create_datasets.py` will create the datasets required for the models of the 6 pathogens known as *ESKAPE*. If you need different pathogens, edit the variables `LIST_PATHOGEN_CODES` and `LIST_PATHOGEN_SEARCH_TEXT` in the program `code/create_datasets.py`.
-
-## Installation required for part 2 (model building)
+## Installation required for part 2 (build models)
 
 1. Install the Ersilia Model Hub: https://ersilia.gitbook.io/ersilia-book/ersilia-model-hub/installation
 
@@ -50,15 +48,26 @@ Note: If you prefer to use a different directory, just edit it in the variable `
 By default the programs assume that PostgreSQL is running in the local computer, and that the database user `chembl_user` with
 password `aaa` has read access to the tables of ChEMBL. This can be changed in program `code/create_datasets.py`.
 
-2. Run the program `create_datasets.py`
+2. Edit the file `config/pathogens.csv` to select the pathogens for which we need models.
 
+This file has two columns:
+
+- **pathogen_code**: Choose a short code to identify the pathogen, alphanumeric only, **without spaces**. Example: "efaecium".
+- **search_text**: A search string, *case insensitive*, to search for the pathogen name in the `organism` field 
+in the ChEMBL database. Example: "Enterococcus Faecium".
+
+3. Run the program `create_datasets.py`
 ```
-python code/create_datasets.py
+cd code
+python create_datasets.py
 ```
 
-This will create the required directory structure under the base path (`~/models`). In the subdirectory of each model there is an `input` subdirectory. The input dataset for that model will be created there.
+This will create the required directory structure under the base path (`~/models`). In the subdirectory of each model 
+there is an `input` subdirectory. The input dataset for that model will be created there.
 
-# Running part 2 - Split and fit
+This will also generate the file `model_metadata/dataset.csv` containing a list of all the datasets and their counts.
+
+# Running part 2 - Build models
 
 1. Run the script to perform the train-test split (instructions pending)
 
