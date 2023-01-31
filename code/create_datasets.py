@@ -11,27 +11,6 @@ BASE_PATH = os.path.expanduser('~/models')
 # To do that, change DATASET_SIZE_LIMIT to the desired maximum value, e.g. 2000 or 5000
 DATASET_SIZE_LIMIT = 1e6
 
-# Code and search text for required pathogens
-# (Note: the codes are just for organization, e.g. the directory names. They can 
-# be any word with no spaces or special characters)
-LIST_PATHOGEN_CODES = [
-    'efaecium',
-    'saureus',
-    'kpneumoniae',
-    'abaumannii',
-    'paeruginosa',
-    'enterobacter'
-]
-LIST_PATHOGEN_SEARCH_TEXT = [
-    'Enterococcus faecium',
-    'Staphylococcus aureus',
-    'Klebsiella pneumoniae',
-    'Acinetobacter baumannii',
-    'Pseudomonas aeruginosa',
-    'Enterobacter'
-]
-
-
 
 def create_dataset_for_task(moleculeSampler, df_input, target_var):
     """Create a dataset that will be used to train a model
@@ -499,18 +478,24 @@ def create_directoy_structure(base_path, patho_code, dict_task_dataset):
 
 # Run dataset creation for all pathogens and tasks
 
+# Read required pathogens from file pathogens.csv
+df_pathogens = pd.read_csv('../config/pathogens.csv')
+print(f'Number of required pathogens: {len(df_pathogens)} (configured in file config/pathogens.csv)')
+list_pathogen_codes = df_pathogens.pathogen_code
+list_pathogen_search_text = df_pathogens.search_text
+
 # Dictionaries to contain, for each pathogen, all their tasks and datasets
 dict_pathogen_task_dataset = {}
 dict_pathogen_task_desc = {}
 
-for i, patho_code in enumerate(LIST_PATHOGEN_CODES):
+for i, patho_code in enumerate(list_pathogen_codes):
     print('------------------------------------------------------------')
-    print(f'Creating data for pathogen {patho_code} ({LIST_PATHOGEN_SEARCH_TEXT[i]})')
+    print(f'Creating data for pathogen {patho_code} ({list_pathogen_search_text[i]})')
     print('------------------------------------------------------------')
     
     dict_task_dataset, dict_task_desc = create_datasets_pathogen(
             pathogen_code=patho_code,
-            organism_contains=LIST_PATHOGEN_SEARCH_TEXT[i])
+            organism_contains=list_pathogen_search_text[i])
 
     dict_pathogen_task_dataset[patho_code] = dict_task_dataset
     dict_pathogen_task_desc[patho_code] = dict_task_desc
