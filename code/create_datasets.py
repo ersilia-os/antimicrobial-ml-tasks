@@ -473,6 +473,25 @@ def create_directoy_structure(base_path, patho_code, dict_task_dataset):
         df_current.to_csv(os.path.join(task_path, 'input', 'input.csv'), index=False)
 
 
+def create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_desc):
+    # Create "dataset.csv" containing dataset master table (list of datasets and their counts)
+
+    dataset_list = []
+    # Loop over all pathogens
+    for _, patho_code in enumerate(dict_pathogen_task_dataset.keys()):
+        # With pathogen patho_code, loop over all tasks
+        for task_code in (dict_pathogen_task_dataset[patho_code]):
+            df_current = dict_pathogen_task_dataset[patho_code][task_code]
+            total_cases = len(df_current)
+            positive_cases = len(df_current[df_current.activity==1])
+            task_desc = dict_pathogen_task_desc[patho_code][task_code]
+            dataset_list.append([patho_code, task_code, total_cases, positive_cases, task_desc])
+
+    df_dataset = pd.DataFrame(dataset_list, 
+            columns=['patho_code', 'task_code', 'total_cases', 'positive_cases', 'task_desc'])
+    df_dataset.to_csv('../model_metadata/dataset.csv', index=False)
+
+
 #################### MAIN ########################################
 
 
@@ -488,6 +507,7 @@ list_pathogen_search_text = df_pathogens.search_text
 dict_pathogen_task_dataset = {}
 dict_pathogen_task_desc = {}
 
+# Run for all pathogens
 for i, patho_code in enumerate(list_pathogen_codes):
     print('------------------------------------------------------------')
     print(f'Creating data for pathogen {patho_code} ({list_pathogen_search_text[i]})')
@@ -503,5 +523,8 @@ for i, patho_code in enumerate(list_pathogen_codes):
     create_directoy_structure(base_path=BASE_PATH,
                               patho_code=patho_code,
                               dict_task_dataset=dict_task_dataset)    
-    
+
+# Create "dataset.csv" containing dataset master table
+create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_desc)
+        
 print('DONE')

@@ -1,73 +1,73 @@
-﻿patho_codeprotein_all,task_code, total_cases, positive_cases,% positive
-efaecium, organism_anytype,5475,1856,34%
-efaecium, organism_anytype_hc,5475,910,17%
-efaecium, organism_mic,5025,1747,35%
-efaecium, organism_mic_hc,5025,841,17%
-efaecium, organism_inhibition,110,40,36%
-efaecium, organism_ic50,152,76,50%
-efaecium, organism_ic50_hc,132,65,49%
-saureus, organism_anytype,61742,18507,30%
-saureus, organism_anytype_hc,61742,9559,15%
-saureus, organism_mic,48026,14143,29%
-saureus, organism_mic_hc,48026,7577,16%
-saureus, organism_iz,8178,3722,46%
-saureus, organism_iz_hc,8178,1898,23%
-saureus, organism_inhibition,7008,676,10%
-saureus, organism_inhibition_hc,7008,365,5%
-saureus, organism_ic50,1576,562,36%
-saureus, organism_ic50_hc,1576,143,9%
-saureus, protein_any,5008,2504,50%
-saureus, protein_any_hc,4517,1416,31%
-saureus, organism_assay_top1,4518,130,3%
-saureus, organism_assay_top1_hc,4518,57,1%
-saureus, protein_top1,616,308,50%
-saureus, protein_top1_hc,606,138,23%
-saureus, protein_top2,828,414,50%
-saureus, protein_top2_hc,683,240,35%
-saureus, protein_top4,696,348,50%
-saureus, protein_top4_hc,562,281,50%
-saureus, protein_top5,310,58,19%
-kpneumoniae, organism_anytype,20147,4257,21%
-kpneumoniae, organism_anytype_hc,20147,2567,13%
-kpneumoniae, organism_mic,12894,2899,22%
-kpneumoniae, organism_mic_hc,12894,1903,15%
-kpneumoniae, organism_iz,2782,1310,47%
-kpneumoniae, organism_iz_hc,2782,673,24%
-kpneumoniae, organism_inhibition,5538,39,1%
-kpneumoniae, organism_ic50,163,65,40%
-kpneumoniae, organism_ic50_hc,163,31,19%
-kpneumoniae, protein_any,448,224,50%
-kpneumoniae, protein_any_hc,363,150,41%
-abaumannii, organism_anytype,28111,678,2%
-abaumannii, organism_anytype_hc,28111,287,1%
-abaumannii,organism_mic,4530,604,13%
-abaumannii,organism_mic_hc,4530,244,5%
-abaumannii,organism_inhibition,23396,33,0%
-paeruginosa,organism_anytype,51533,5405,10%
-paeruginosa,organism_anytype_hc,51533,2380,5%
-paeruginosa,organism_mic,23467,3214,14%
-paeruginosa,organism_mic_hc,23467,1397,6%
-paeruginosa,organism_iz,4987,1998,40%
-paeruginosa,organism_iz_hc,4987,947,19%
-paeruginosa,organism_inhibition,24244,306,1%
-paeruginosa,organism_inhibition_hc,24244,162,1%
-paeruginosa,organism_ic50,740,116,16%
-paeruginosa,protein_any,2911,1230,42%
-paeruginosa,protein_any_hc,2911,750,26%
-paeruginosa,organism_assay_top1,24074,47,0%
-paeruginosa,protein_top1,658,152,23%
-paeruginosa,protein_top2,571,209,37%
-paeruginosa,protein_top2_hc,571,110,19%
-paeruginosa,protein_top3,916,458,50%
-paeruginosa,protein_top3_hc,808,404,50%
-paeruginosa,protein_top4,197,74,38%
-paeruginosa,protein_top4_hc,197,34,17%
-paeruginosa,protein_top5,116,44,38%
-enterobacter,organism_anytype,3798,1682,44%
-enterobacter,organism_anytype_hc,3798,1330,35%
-enterobacter,organism_mic,3525,1617,46%
-enterobacter,organism_mic_hc,3525,1292,37%
-enterobacter,protein_any,330,162,49%
-enterobacter,protein_any_hc,330,94,28%
-enterobacter,protein_top1,256,127,50%
-enterobacter,protein_top1_hc,256,76,30%
+patho_code,task_code,total_cases,positive_cases,task_desc
+efaecium,organism_anytype,5475,1856,All experiments targeting organism. Using activity low-confidence cut
+efaecium,organism_anytype_hc,5475,910,All experiments targeting organism. Using activity high-confidence cut
+efaecium,organism_mic,5025,1747,Experiments of type MIC targeting organism. Using activity low-confidence cut
+efaecium,organism_mic_hc,5025,841,Experiments of type MIC targeting organism. Using activity high-confidence cut
+efaecium,organism_inhibition,110,40,"Experiments of type Activity or Inhibition, targeting organism. Using activity low-confidence cut"
+efaecium,organism_ic50,152,76,Experiments of type IC50 targeting organism. Using activity low-confidence cut
+efaecium,organism_ic50_hc,132,65,Experiments of type IC50 targeting organism. Using activity high-confidence cut
+saureus,organism_anytype,61742,18507,All experiments targeting organism. Using activity low-confidence cut
+saureus,organism_anytype_hc,61742,9559,All experiments targeting organism. Using activity high-confidence cut
+saureus,organism_mic,48026,14143,Experiments of type MIC targeting organism. Using activity low-confidence cut
+saureus,organism_mic_hc,48026,7577,Experiments of type MIC targeting organism. Using activity high-confidence cut
+saureus,organism_iz,8178,3722,Experiments of type IZ targeting organism. Using activity low-confidence cut
+saureus,organism_iz_hc,8178,1898,Experiments of type IZ targeting organism. Using activity high-confidence cut
+saureus,organism_inhibition,7008,676,"Experiments of type Activity or Inhibition, targeting organism. Using activity low-confidence cut"
+saureus,organism_inhibition_hc,7008,365,"Experiments of type Activity or Inhibition, targeting organism. Using activity high-confidence cut"
+saureus,organism_ic50,1576,562,Experiments of type IC50 targeting organism. Using activity low-confidence cut
+saureus,organism_ic50_hc,1576,143,Experiments of type IC50 targeting organism. Using activity high-confidence cut
+saureus,protein_any,5008,2504,All experiments targeting proteins. Using activity low-confidence cut
+saureus,protein_any_hc,4517,1416,All experiments targeting proteins. Using activity high-confidence cut
+saureus,organism_assay_top1,4518,130,Results of top 1 assay (id=1804402). Using activity low-confidence cut
+saureus,organism_assay_top1_hc,4518,57,Results of top 1 assay (id=1804402). Using activity high-confidence cut
+saureus,protein_top1,616,308,Experiments targeting top 1 protein (Quinolone resistance protein norA). Using activity low-confidence cut
+saureus,protein_top1_hc,606,138,Experiments targeting top 1 protein (Quinolone resistance protein norA). Using activity high-confidence cut
+saureus,protein_top2,828,414,Experiments targeting top 2 protein (DNA gyrase). Using activity low-confidence cut
+saureus,protein_top2_hc,683,240,Experiments targeting top 2 protein (DNA gyrase). Using activity high-confidence cut
+saureus,protein_top4,696,348,Experiments targeting top 4 protein (DNA gyrase subunit B). Using activity low-confidence cut
+saureus,protein_top4_hc,562,281,Experiments targeting top 4 protein (DNA gyrase subunit B). Using activity high-confidence cut
+saureus,protein_top5,310,58,Experiments targeting top 5 protein (Sortase A). Using activity low-confidence cut
+kpneumoniae,organism_anytype,20147,4257,All experiments targeting organism. Using activity low-confidence cut
+kpneumoniae,organism_anytype_hc,20147,2567,All experiments targeting organism. Using activity high-confidence cut
+kpneumoniae,organism_mic,12894,2899,Experiments of type MIC targeting organism. Using activity low-confidence cut
+kpneumoniae,organism_mic_hc,12894,1903,Experiments of type MIC targeting organism. Using activity high-confidence cut
+kpneumoniae,organism_iz,2782,1310,Experiments of type IZ targeting organism. Using activity low-confidence cut
+kpneumoniae,organism_iz_hc,2782,673,Experiments of type IZ targeting organism. Using activity high-confidence cut
+kpneumoniae,organism_inhibition,5538,39,"Experiments of type Activity or Inhibition, targeting organism. Using activity low-confidence cut"
+kpneumoniae,organism_ic50,163,65,Experiments of type IC50 targeting organism. Using activity low-confidence cut
+kpneumoniae,organism_ic50_hc,163,31,Experiments of type IC50 targeting organism. Using activity high-confidence cut
+kpneumoniae,protein_any,448,224,All experiments targeting proteins. Using activity low-confidence cut
+kpneumoniae,protein_any_hc,363,150,All experiments targeting proteins. Using activity high-confidence cut
+abaumannii,organism_anytype,28111,678,All experiments targeting organism. Using activity low-confidence cut
+abaumannii,organism_anytype_hc,28111,287,All experiments targeting organism. Using activity high-confidence cut
+abaumannii,organism_mic,4530,604,Experiments of type MIC targeting organism. Using activity low-confidence cut
+abaumannii,organism_mic_hc,4530,244,Experiments of type MIC targeting organism. Using activity high-confidence cut
+abaumannii,organism_inhibition,23396,33,"Experiments of type Activity or Inhibition, targeting organism. Using activity low-confidence cut"
+paeruginosa,organism_anytype,51533,5405,All experiments targeting organism. Using activity low-confidence cut
+paeruginosa,organism_anytype_hc,51533,2380,All experiments targeting organism. Using activity high-confidence cut
+paeruginosa,organism_mic,23467,3214,Experiments of type MIC targeting organism. Using activity low-confidence cut
+paeruginosa,organism_mic_hc,23467,1397,Experiments of type MIC targeting organism. Using activity high-confidence cut
+paeruginosa,organism_iz,4987,1998,Experiments of type IZ targeting organism. Using activity low-confidence cut
+paeruginosa,organism_iz_hc,4987,947,Experiments of type IZ targeting organism. Using activity high-confidence cut
+paeruginosa,organism_inhibition,24244,306,"Experiments of type Activity or Inhibition, targeting organism. Using activity low-confidence cut"
+paeruginosa,organism_inhibition_hc,24244,162,"Experiments of type Activity or Inhibition, targeting organism. Using activity high-confidence cut"
+paeruginosa,organism_ic50,740,116,Experiments of type IC50 targeting organism. Using activity low-confidence cut
+paeruginosa,protein_any,2911,1230,All experiments targeting proteins. Using activity low-confidence cut
+paeruginosa,protein_any_hc,2911,750,All experiments targeting proteins. Using activity high-confidence cut
+paeruginosa,organism_assay_top1,24074,47,Results of top 1 assay (id=1804405). Using activity low-confidence cut
+paeruginosa,protein_top1,658,152,Experiments targeting top 1 protein (Beta Lactamase). Using activity low-confidence cut
+paeruginosa,protein_top2,571,209,Experiments targeting top 2 protein (Beta-lactamase). Using activity low-confidence cut
+paeruginosa,protein_top2_hc,571,110,Experiments targeting top 2 protein (Beta-lactamase). Using activity high-confidence cut
+paeruginosa,protein_top3,916,458,Experiments targeting top 3 protein (UDP-3-O-acyl-GlcNAc deacetylase). Using activity low-confidence cut
+paeruginosa,protein_top3_hc,808,404,Experiments targeting top 3 protein (UDP-3-O-acyl-GlcNAc deacetylase). Using activity high-confidence cut
+paeruginosa,protein_top4,197,74,Experiments targeting top 4 protein (Transcriptional activator protein lasR). Using activity low-confidence cut
+paeruginosa,protein_top4_hc,197,34,Experiments targeting top 4 protein (Transcriptional activator protein lasR). Using activity high-confidence cut
+paeruginosa,protein_top5,116,44,Experiments targeting top 5 protein (Regulatory protein RhlR). Using activity low-confidence cut
+enterobacter,organism_anytype,3798,1682,All experiments targeting organism. Using activity low-confidence cut
+enterobacter,organism_anytype_hc,3798,1330,All experiments targeting organism. Using activity high-confidence cut
+enterobacter,organism_mic,3525,1617,Experiments of type MIC targeting organism. Using activity low-confidence cut
+enterobacter,organism_mic_hc,3525,1292,Experiments of type MIC targeting organism. Using activity high-confidence cut
+enterobacter,protein_any,330,162,All experiments targeting proteins. Using activity low-confidence cut
+enterobacter,protein_any_hc,330,94,All experiments targeting proteins. Using activity high-confidence cut
+enterobacter,protein_top1,256,127,Experiments targeting top 1 protein (Beta-lactamase). Using activity low-confidence cut
+enterobacter,protein_top1_hc,256,76,Experiments targeting top 1 protein (Beta-lactamase). Using activity high-confidence cut
