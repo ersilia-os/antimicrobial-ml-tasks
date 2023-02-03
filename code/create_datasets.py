@@ -474,7 +474,7 @@ def create_directoy_structure(base_path, patho_code, dict_task_dataset):
 
 
 def create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_desc):
-    # Create "dataset.csv" containing dataset master table (list of datasets and their counts)
+    """Create "dataset.csv" containing dataset master table (list of datasets and their counts)"""
 
     dataset_list = []
     # Loop over all pathogens
@@ -489,7 +489,52 @@ def create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_d
 
     df_dataset = pd.DataFrame(dataset_list, 
             columns=['patho_code', 'task_code', 'total_cases', 'positive_cases', 'task_desc'])
-    df_dataset.to_csv('../model_metadata/dataset.csv', index=False)
+    filename_dataset = '../model_metadata/dataset.csv'
+    df_dataset.to_csv(filename_dataset, index=False)
+    print(f'Created file {os.path.abspath(filename_dataset)}')
+
+
+def create_scripts(dict_pathogen_task_dataset, dict_pathogen_task_desc, destination_path):
+    """Create the shell scripts to run ZairaChem once for each model
+    Two scripts will be created: split_all.sh and fit_predict_all.sh
+
+    Example of fit_split_all.sh contents:
+        cd efaecium/efaecium_organism_anytype
+        ../../bin/call_zairachem.sh fit
+        ../../bin/call_zairachem.sh predict
+        cd ../..
+    """
+
+    # Open the two files to be created: split_all and fit_predict_all shell scripts
+    filename_split = os.path.join(destination_path, 'split_all.sh')
+    filename_fit = os.path.join(destination_path, 'fit_predict_all.sh')
+    f_split = open(filename_split, 'w')
+    f_fit = open(filename_fit, 'w')
+    
+    # Loop over all pathogens
+    for _, patho_code in enumerate(dict_pathogen_task_dataset.keys()):
+        # With pathogen patho_code, loop over all tasks
+        for task_code in (dict_pathogen_task_dataset[patho_code]):
+            patho_task_code = patho_code + '_' + task_code
+            task_rel_path = os.path.join(patho_code, patho_task_code)
+
+            f_split.writelines([
+                'cd ' + task_rel_path +'\n',
+                '../../bin/call_zairachem.sh split similarity\n',
+                'cd ../..\n\n'
+                ])
+
+            f_fit.writelines([
+                'cd ' + task_rel_path + '\n',
+                '../../bin/call_zairachem.sh fit\n',
+                '../../bin/call_zairachem.sh predict\n',
+                'cd ../..\n\n',
+                ])
+
+    f_split.close()
+    f_fit.close()
+    print(f'Created file {os.path.abspath(filename_split)}')
+    print(f'Created file {os.path.abspath(filename_fit)}')
 
 
 #################### MAIN ########################################
@@ -526,5 +571,8 @@ for i, patho_code in enumerate(list_pathogen_codes):
 
 # Create "dataset.csv" containing dataset master table
 create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_desc)
-        
+
+# Create the scripts "split_all.sh" and "fit_predict_all.sh"
+create_scripts(dict_pathogen_task_dataset, dict_pathogen_task_desc, BASE_PATH)
+
 print('DONE')
