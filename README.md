@@ -25,7 +25,6 @@ conda activate antimicrobial
 3. Install the package https://github.com/ersilia-os/chembl_ml_tools.git , following the instructions in that 
 repository. This includes the instructions to install the ChEMBL database in PostgreSQL.
 
-
 4. Create a directory "models" in your home. Your models and model data will be stored here.
 
 ```
@@ -39,13 +38,18 @@ Note: If you prefer to use a different directory, just edit it in the variable `
 
 2. Install ZairaChem by following the instructions in the repository: https://github.com/ersilia-os/zaira-chem
 
-3. Copy the script `scripts/call_zairachem.sh` to the directory `~/bin` (create `~/bin` if it does not exist).
+3. Copy the directory `bin` from `antimicrobial_ml_tasks` to the directory `~/models`
+
+```
+# Assuming you are in directory antimicrobial_ml_tasks
+cp -R bin ~/models/
+```
 
 # Running part 1 - Create datasets
 
 1. Make sure that the PostgreSQL server containing the ChEMBL database is running. In case of doubt, review step 3 of the installation.
 
-By default the programs assume that PostgreSQL is running in the local computer, and that the database user `chembl_user` with
+By default, the programs assume that PostgreSQL is running in the local computer, and that the database user `chembl_user` with
 password `aaa` has read access to the tables of ChEMBL. This can be changed in program `code/create_datasets.py`.
 
 2. Edit the file `config/pathogens.csv` to select the pathogens for which we need models.
@@ -62,16 +66,28 @@ cd code
 python create_datasets.py
 ```
 
-This will create the required directory structure under the base path (`~/models`). In the subdirectory of each model 
+This will create:
+
+- the required directory structure under the base path (`~/models`). In the each model's directory
+(e.g. `~/models/efaecium/efaecium_organism_anytype`)
 there is an `input` subdirectory. The input dataset for that model will be created there.
 
-This will also generate the file `model_metadata/dataset.csv` containing a list of all the datasets and their counts.
+- the file `model_metadata/dataset.csv` containing a list of all the datasets and their counts.
+
+- the scripts `~/models/split_all.sh` and `~/models/fit_predict_all.sh`.
 
 # Running part 2 - Build models
 
-1. Run the script to perform the train-test split (instructions pending)
+1. Run the script to perform the train-test split
+```
+cd ~/models
+bash split_all.sh
+```
 
-2. Run the script to fit and assess the models (instructions pending)
+2. Run the script to fit and assess the models
+```
+bash fit_predict_all.sh
+```
 
 # Results
 
@@ -87,5 +103,21 @@ The directory for each model (example: `~/models/saureus/saureus_organism_anytyp
 
 - test: Predictions for the test data and assessment reports of the model
 
-- log: The log files resulting from the split, test and predict runs
+- log: The log files resulting from the split, test and predict runs of ZairaChem
 
+The file `~/models/runs.csv` will contain a log of all the ZairaChem runs, with one line per run. Its
+fields are: directory, begin date/time, end date/time, exit code.
+
+# FAQ
+
+### 1. Connection error when running create_datasets.py
+
+Error message:
+```
+psycopg2.OperationalError: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+        Is the server running on that host and accepting TCP/IP connections?
+```
+Solution: Assuming the ChEMBL database was correctly installed, this problem usually happens because the postgreSQL service is down:
+```
+sudo service postgresql start
+```
