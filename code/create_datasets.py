@@ -9,7 +9,11 @@ BASE_PATH = os.path.expanduser('~/models')
 
 # If the data is large, in a pilot modeling phase we may wish to build models with a sample of the data.
 # To do that, change DATASET_SIZE_LIMIT to the desired maximum value, e.g. 2000 or 5000
+# If we do not want to limit, we set it to 1e6
 DATASET_SIZE_LIMIT = 1e6
+
+# Split method (similarity, scaffold or random): will be used in the generated script split_all.sh
+SPLIT_METHOD = 'similarity'
 
 
 def create_dataset_for_task(moleculeSampler, df_input, target_var):
@@ -473,10 +477,22 @@ def create_directoy_structure(base_path, patho_code, dict_task_dataset):
         df_current.to_csv(os.path.join(task_path, 'input', 'input.csv'), index=False)
 
 
-def create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_desc):
-    """Create "dataset.csv" containing dataset master table (list of datasets and their counts)"""
+def create_model_metadata(dict_pathogen_task_dataset, dict_pathogen_task_desc):
+    """Create the metadata tables "dataset.csv" and "model.csv"
+        - dataset.csv contains the dataset master table (list of datasets and their counts)
+        - model.csv contains one row for each model. Useful for systematic analysis 
+          of results (see examples in analysis directory)
+    """
+
+    # The "cap" field contains the value of DATASET_SIZE_LIMIT, or "full" if we
+    # do not want to cap (that is, if we set DATASET_SIZE_LIMIT>=1e6)
+    if DATASET_SIZE_LIMIT >= 1e6:
+        cap_value = 'full'
+    else:
+        cap_value = str(DATASET_SIZE_LIMIT)
 
     dataset_list = []
+    model_list = []
     # Loop over all pathogens
     for _, patho_code in enumerate(dict_pathogen_task_dataset.keys()):
         # With pathogen patho_code, loop over all tasks
@@ -486,12 +502,21 @@ def create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_d
             positive_cases = len(df_current[df_current.activity==1])
             task_desc = dict_pathogen_task_desc[patho_code][task_code]
             dataset_list.append([patho_code, task_code, total_cases, positive_cases, task_desc])
+            model_list.append([cap_value, SPLIT_METHOD, 'zairachem', patho_code, task_code])
 
+    # Create dataset.csv
     df_dataset = pd.DataFrame(dataset_list, 
             columns=['patho_code', 'task_code', 'total_cases', 'positive_cases', 'task_desc'])
     filename_dataset = '../model_metadata/dataset.csv'
     df_dataset.to_csv(filename_dataset, index=False)
     print(f'Created file {os.path.abspath(filename_dataset)}')
+
+    # Create model.csv
+    df_model = pd.DataFrame(model_list, 
+            columns=['cap', 'split', 'is_lazy', 'patho_code', 'task_code'])
+    filename_model = '../model_metadata/model.csv'
+    df_model.to_csv(filename_model, index=False)
+    print(f'Created file {os.path.abspath(filename_model)}')
 
 
 def create_scripts(dict_pathogen_task_dataset, dict_pathogen_task_desc, destination_path):
@@ -520,7 +545,7 @@ def create_scripts(dict_pathogen_task_dataset, dict_pathogen_task_desc, destinat
 
             f_split.writelines([
                 'cd ' + task_rel_path +'\n',
-                '../../bin/call_zairachem.sh split similarity\n',
+                f'../../bin/call_zairachem.sh split {SPLIT_METHOD}\n',
                 'cd ../..\n\n'
                 ])
 
@@ -569,8 +594,8 @@ for i, patho_code in enumerate(list_pathogen_codes):
                               patho_code=patho_code,
                               dict_task_dataset=dict_task_dataset)    
 
-# Create "dataset.csv" containing dataset master table
-create_dataset_master_table(dict_pathogen_task_dataset, dict_pathogen_task_desc)
+# Create "dataset.csv" and "model.csv".
+create_model_metadata(dict_pathogen_task_dataset, dict_pathogen_task_desc)
 
 # Create the scripts "split_all.sh" and "fit_predict_all.sh"
 create_scripts(dict_pathogen_task_dataset, dict_pathogen_task_desc, BASE_PATH)
