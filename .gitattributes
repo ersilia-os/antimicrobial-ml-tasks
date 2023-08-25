@@ -1,3 +1,4 @@
+*.csv filter=lfs diff=lfs merge=lfs -text
 # Configuration of line breaks, to prevent problems with Linux-Windows format translation
 # Based on https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings
 
