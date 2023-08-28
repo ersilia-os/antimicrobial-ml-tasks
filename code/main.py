@@ -11,8 +11,8 @@ from default import DATAPATH
 from split_datasets import Splitter
 
 
-pathogen = "efaecium"
-"""
+pathogen = sys.argv[1]
+
 #Standardise units
 df = pd.read_csv(os.path.join(DATAPATH, pathogen, "{}_original.csv".format(pathogen)), low_memory=False)
 rc = RawCleaner()
@@ -49,7 +49,6 @@ for k,v in types_data.items():
     except:
         print("No High Cut data for {} {} assay".format(pathogen, k))
 
-"""
 s = Splitter(pathogen)
 s.create_directoy_structure()
 s.create_input_files()
