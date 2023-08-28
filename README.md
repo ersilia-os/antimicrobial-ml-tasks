@@ -18,19 +18,15 @@ The installation instructions assume you have Ubuntu Linux, and that the conda p
 2. Not required but recommended: create a conda environment for this project. Activate it.
 
 ```
-conda create -n antimicrobial python=3.7
+conda create -n antimicrobial python=3.10
 conda activate antimicrobial
 ```
 
 3. Install the package https://github.com/ersilia-os/chembl_ml_tools.git , following the instructions in that 
 repository. This includes the instructions to install the ChEMBL database in PostgreSQL.
 
-4. Create a directory "models" in your home. Your models and model data will be stored here.
 
-```
-mkdir ~/models
-```
-Note: If you prefer to use a different directory, just edit it in the variable `BASE_PATH` in the program `code/create_datasets.py`.
+Note: thsi pipeline is prepared followign the existing repository structure. Data will be stored in the `/data` path. This can be changed by changing the `DATAPATH` variable in `code/default.py`.
 
 ## Installation required for part 2 (build models)
 
@@ -38,11 +34,11 @@ Note: If you prefer to use a different directory, just edit it in the variable `
 
 2. Install ZairaChem by following the instructions in the repository: https://github.com/ersilia-os/zaira-chem
 
-3. Copy the directory `bin` from `antimicrobial_ml_tasks` to the directory `~/models`
+3. Copy the directory `bin` from `antimicrobial_ml_tasks` to the directory `~/data`
 
 ```
 # Assuming you are in directory antimicrobial_ml_tasks
-cp -R bin ~/models/
+cp -R bin ~/data/
 ```
 
 # Running part 1 - Create datasets
@@ -60,14 +56,21 @@ This file has two columns:
 - **search_text**: A search string, *case insensitive*, to search for the pathogen name in the `organism` field 
 in the ChEMBL database. Example: "Enterococcus Faecium".
 
-3. Run the program `create_datasets.py`
+3. Run the script `pathogens.py`
 ```
 cd code
-python create_datasets.py
+python pathogens.py
 ```
 
-This will create:
+This will create folders under `/data` with all the available data for the selected pathogens. An example is provided
 
+4. Run the script `main.py`, passing the pathogen code as argument. This will create several datasets for the specific assays requested (currently, standard_types like MIC are used, but these can be easily modified by changing the `default.py`file and by calling other classes from `generate_datasets.py`)
+```
+cd code
+python main.py <pathogen_code>
+```
+
+#  TODO
 - the required directory structure under the base path (`~/models`). In the each model's directory
 (e.g. `~/models/efaecium/efaecium_organism_anytype`)
 there is an `input` subdirectory. The input dataset for that model will be created there.
@@ -76,7 +79,7 @@ there is an `input` subdirectory. The input dataset for that model will be creat
 
 - the scripts `~/models/split_all.sh` and `~/models/fit_predict_all.sh`.
 
-# Running part 2 - Build models
+## Running part 2 - Build models
 
 1. Run the script to perform the train-test split
 ```

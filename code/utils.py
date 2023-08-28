@@ -8,7 +8,7 @@ from rdkit.Chem import Descriptors
 abspath = os.path.abspath(__file__)
 sys.path.append(abspath)
 
-from default import UNITS_MASTER
+from default import UNITS_MASTER, CONFIGPATH
 
 
 class RawCleaner():
@@ -47,7 +47,7 @@ class RawCleaner():
         return df
     
     def drop_unwanted_cols(self, df):
-        cols_to_drop = ['doc_id', 'assay_id', 'activity_id', 'assay_type',
+        cols_to_drop = ['doc_id', 'activity_id', 'assay_type',
        'assay_confidence_score', 'assay_bao_format', 'pchembl_value', 'activity_comment',
        'target_tax_id', 'protein_accession_class', 'year',
        'pubmed_id', 'count_activity_rows', 'doc_id_all',
@@ -68,6 +68,23 @@ class RawCleaner():
         df = df[~df["molecular_weight"].isna()]
         return df
     
+    def activity_cleanup(self, df):
+        for i,r in df.iterrows():
+            if r['standard_type'] == 'log10cfu':
+                df.at[i, 'standard_type'] = 'Activity'
+                df.at[i, 'standard_units'] = 'log10CFU'
+            elif r['standard_type'] == 'log10CFU/ml':
+                df.at[i, 'standard_type'] = 'Activity'
+                df.at[i, 'standard_units'] = 'log10CFU/ml'
+            elif r['standard_type'] == '-logMIC':
+                df.at[i, 'standard_type'] = 'MIC'
+                df.at[i, 'standard_units'] = '-logMIC'
+            elif r["standard_type"] == "INHIBITION":
+                df.at[i, "standard_type"] = "Inhibition"
+            else:
+                continue
+        return df
+    
     def add_ucum_units(self, df):
         units_to_val_units = dict(zip(self.ucum['units'], self.ucum['val_unit']))
         #df['val_units'] = [units_to_val_units[unit] for unit in df['standard_units']]
@@ -79,6 +96,7 @@ class RawCleaner():
         df = self.eliminate_rows(df)
         df = self.drop_unwanted_cols(df)
         df = self.add_mol_weight(df)
+        df = self.activity_cleanup(df)
         df = self.add_ucum_units(df)
         return df
 
@@ -151,17 +169,15 @@ class UnitStandardiser():
             if r[self.unit_col] in umol_converter.keys():
                 final_units += ["umol"]
                 if r["val_units"] in ["umol", "nmol", "pmol", "mmol", "mol"]:
-                    print("here", r[self.unit_col])
                     final_value += [umol_converter[r[self.unit_col]](r[self.value_col])] 
                 else:
-                    print("not here", r[self.unit_col])
                     final_value += [umol_converter[r[self.unit_col]](r[self.value_col], r[self.mw_col])]
-            elif r[self.unit_col] in umol_converter.keys():
+            elif r[self.unit_col] in ugmg_converter.keys():
                 final_units += ["ug.mg-1"]
-                final_value += [ugmg_converter[r[self.unit_col]](r[self.value_col], r[self.mw_col])]
-            elif r[self.unit_col] in umol_converter.keys():
+                final_value += [ugmg_converter[r[self.unit_col]](r[self.value_col])]
+            elif r[self.unit_col] in umolmg_converter.keys():
                 final_units += ["umol.mg-1"]
-                final_value += [umolmg_converter[r[self.unit_col]](r[self.value_col], r[self.mw_col])]
+                final_value += [umolmg_converter[r[self.unit_col]](r[self.value_col])]
             else:
                 final_units += [r[self.unit_col]]
                 final_value += [r[self.value_col]]
@@ -169,5 +185,135 @@ class UnitStandardiser():
         df["final_value"] = final_value
         return df
 
+class Binarizer():
+    def __init__(self):
+        pass
+    
+    def _load_config_file(self):
+        df = pd.read_csv(os.path.join(CONFIGPATH, "cutoff_config.csv"),
+                         usecols = ["standard_type", "final_units", "active_direction", 'low_cut', 'high_cut'],
+                         keep_default_na = False, na_values=['']
+                         )
+        print('\nstandard_type_config shape:', df.shape)
+        return df
+    
+    def _warning_for_missing_config_entries(self, df):
+        """Give a warning if missing important (type,units) combination in config table"""
+        # Top 10 combinations of (type, units) that appear at least 100 times
+        top_values_type_unit = df[['standard_type', 'final_units']].value_counts()[0:10]
+        top_values_type_unit = top_values_type_unit[top_values_type_unit>100]
+        # Detailed data for those (type, units)
+        df_top = df.merge(top_values_type_unit.to_frame(), left_on=['standard_type', 'final_units'], right_index=True)
+        # Combinations not present in config table ()
+        missing_top_type_units = df_top[df_top.is_in_config_table=='left_only']\
+                [['standard_type', 'final_units']].value_counts()
+        if len(missing_top_type_units) > 0:
+            print('\n--- WARNING - The following combinations of (standard_type, standard_unit) are'
+                ' often present in the data but do not exist in the configuration table. Please'
+                ' consider updating the configuration table:')
+            print(missing_top_type_units)
 
+    def add_cutoffs(self, df):
+        configfile = self._load_config_file()     
+        df1 = df.merge(configfile, how='left',
+              on=['standard_type', 'final_units'],
+              indicator='is_in_config_table')
+        self._warning_for_missing_config_entries(df1)
+        print(df1.columns)
+        return df1
+    
+    def eliminate_no_direction(self, df):
+        rows_before_filter = len(df)
+        df = df[df.active_direction.notnull()]
+        rows_after_filter = len(df)
+        print('\nRemoving rows where the combination of standard_type and standard_units is not in the config table.')
+        print(f'Removed {rows_before_filter-rows_after_filter} rows. Remaining {rows_after_filter} rows.')
+        return df
 
+    def _calculate_active(self, row, cut):
+        if np.isnan(row.standard_value):
+            return row.comment_active
+        elif row.active_direction == 1:  # Higher value is more active
+            if row.standard_value >= cut:
+                return 1
+            else:
+                return 0
+        elif row.active_direction == -1:  # Lower value is more active
+            if row.standard_value <= cut:
+                return 1
+            else:
+                return 0
+    
+    def calculate_active(self,df):
+        print(df.columns)     
+        df['activity_lc'] = df.apply(
+                lambda row: self._calculate_active(row, row.low_cut), 
+                axis=1).astype('float')
+        df['activity_hc'] = df.apply(
+                lambda row: self._calculate_active(row, row.high_cut), 
+                axis=1).astype('float')
+        return df
+    
+    def remove_inconsistencies(self, df):
+        # Remove cases where standard_direction is not consistent with our activity definition
+    # Background:
+    # If the value resulting of an experiment is beyond the range that can be measured, 
+    # instead of reporting the value, it will be reported as ">x" or "<x".
+
+    # The variable standard_direction contains "=" if the precise value is reported. It will contain "<", "<=", ">" or ">=" if the reported value is a lower or upper bound. For example, if the "real" value is 500 but only up to 100 can be measured, then standard_value=100 and standard_direction=">".
+
+    # Taking this into account, it makes sense that, for results that we label as ACTIVE:
+    # - If active_direction=1
+    #     * standard_relation may be '>' (it indicates a "large" value)
+    # - If active_direction=-1
+    #     * standard_relation may be '<' (it indicates a "small" value)
+
+    # For results that we label as NOT ACTIVE:
+    # - If active_direction=1
+    #     * standard_relation may be '<' (it indicates a "small" value)
+    # - If active_direction=-1
+    #     * standard_relation may be '>' (it indicates a "large" value)
+
+        rows_to_drop = df[(df.comment_active.isnull()) &
+        (df.activity_hc==0) & 
+        (df.active_direction==1) & 
+        (df.standard_relation.isin(['>','>=']))
+        ].index
+        df.drop(rows_to_drop, inplace=True)
+        print(f'Removed {len(rows_to_drop)} cases with active direction +, relation ">", but labeled as not active')
+
+        rows_to_drop = df[(df.comment_active.isnull()) &
+        (df.activity_hc==0) & 
+        (df.active_direction==-1) & 
+        (df.standard_relation.isin(['<','<=']))
+        ].index
+        df.drop(rows_to_drop, inplace=True)
+        print(f'Removed {len(rows_to_drop)} cases with active direction -, relation "<", but labeled as not active')
+
+        rows_to_drop = df[(df.comment_active.isnull()) &
+        (df.activity_hc==1) & 
+        (df.active_direction==1) & 
+        (df.standard_relation.isin(['<','<=']))
+        ].index
+        df.drop(rows_to_drop, inplace=True)
+        print(f'Removed {len(rows_to_drop)} cases with active direction +, relation "<", but labeled as active')
+
+        rows_to_drop = df[(df.comment_active.isnull()) &
+        (df.activity_hc==1) & 
+        (df.active_direction==-1) & 
+        (df.standard_relation.isin(['>','>=']))
+        ].index
+        df.drop(rows_to_drop, inplace=True)
+        print(f'Removed {len(rows_to_drop)} cases with active direction -, relation ">", but labeled as active')
+
+        print('Cases remaining after filter:', len(df))
+        return df
+    
+    def run(self, df):
+        df = self.add_cutoffs(df)
+        print(df.head())
+        df = self.eliminate_no_direction(df)
+        print(df.head())
+        df = self.calculate_active(df)
+        df = self.remove_inconsistencies(df)
+        return df

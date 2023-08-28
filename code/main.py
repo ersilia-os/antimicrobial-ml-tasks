@@ -5,42 +5,51 @@ import pandas as pd
 abspath = os.path.abspath(__file__)
 sys.path.append(abspath)
 
-from pathogens import PathogenGetter
-from utils import UnitStandardiser, RawCleaner
+from utils import UnitStandardiser, RawCleaner, Binarizer
+from generate_datasets import AssayDatasets, ProteinDatasets, TypeDatasets
 from default import DATAPATH
-
-#pathogens = sys.argv[1] #csv file indicating the pathogens to process, see example in ../config/pathogens.csv
-
-#Obtain desired pathogen data
-"""
-df_pathogens = pd.read_csv(pathogens)
-list_pathogen_codes = df_pathogens.pathogen_code
-list_pathogen_search_text = df_pathogens.search_text
-for i, patho_code in enumerate(list_pathogen_codes):
-    print('------------------------------------------------------------')
-    print(f'Creating data for pathogen {patho_code} ({list_pathogen_search_text[i]})')
-    print('------------------------------------------------------------')
-    patho_getter = PathogenGetter(list_pathogen_search_text[i])
-    df = patho_getter.create_datasets_pathogen()
-    if not os.path.exists(os.path.join(DATAPATH, "pathogen_original")):
-        os.makedirs(os.path.join(DATAPATH, "pathogen_original"))
-    df.to_csv(os.path.join(DATAPATH, "pathogen_original", "{}.csv".format(patho_code)), index=False)
+from split_datasets import Splitter
 
 
-# List all files in the folder
-file_list = os.listdir(os.path.join(DATAPATH, "pathogen_original"))
-
-# Iterate through each file
-for filename in file_list:
-    df = pd.read_csv(os.path.join(DATAPATH, "pathogen_original", filename), low_memory=False)
+pathogen = "efaecium"
 """
 #Standardise units
-
-df = pd.read_csv(os.path.join(DATAPATH, "pathogen_original", "efaecium.csv"))
+df = pd.read_csv(os.path.join(DATAPATH, pathogen, "{}_original.csv".format(pathogen)), low_memory=False)
 rc = RawCleaner()
 df = rc.run(df)
 
 us = UnitStandardiser()
 df = us.standardise(df)
+df.to_csv(os.path.join(DATAPATH, pathogen, "{}_processed.csv".format(pathogen)), index=False)
 
-df.to_csv(os.path.join(DATAPATH, "test.csv"), index=False)
+bin = Binarizer()
+df = bin.run(df)
+df.to_csv(os.path.join(DATAPATH, pathogen, "{}_binary.csv".format(pathogen)), index=False)
+
+
+td = TypeDatasets(pathogen)
+lc, hc = td.run_any(df)
+try:
+    lc.to_csv(os.path.join(DATAPATH, pathogen, "{}_anytype_lc.csv".format(pathogen)), index=False)
+except:
+    print("No Low Cut data for {} assay types".format(pathogen))
+try:
+    hc.to_csv(os.path.join(DATAPATH, pathogen, "{}_anytype_hc.csv".format(pathogen)), index=False)
+except:
+    print("No High Cut data for {} assay types".format(pathogen))
+
+types_data = td.run_type(df)
+for k,v in types_data.items():
+    try:
+        v[0].to_csv(os.path.join(DATAPATH, pathogen, "{}_{}_lc.csv".format(pathogen, k)), index=False)
+    except:
+        print("No Low Cut data for {} {} assay".format(pathogen, k))
+    try:           
+        v[1].to_csv(os.path.join(DATAPATH, pathogen, "{}_{}_hc.csv".format(pathogen, k)), index=False)
+    except:
+        print("No High Cut data for {} {} assay".format(pathogen, k))
+
+"""
+s = Splitter(pathogen)
+s.create_directoy_structure()
+s.create_input_files()
