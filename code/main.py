@@ -38,6 +38,7 @@ try:
 except:
     print("No High Cut data for {} assay types".format(pathogen))
 
+"""
 types_data = td.run_type(df)
 for k,v in types_data.items():
     try:
@@ -52,3 +53,4 @@ for k,v in types_data.items():
 s = Splitter(pathogen)
 s.create_directoy_structure()
 s.create_input_files()
+"""
