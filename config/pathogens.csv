@@ -1,3 +1,9 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3ef9a100994b5ac69661c732e1568c4044ffdcc1a89ffa5277dd782f53a76d3e
-size 290
+pathogen_code,search_text
+efaecium,Enterococcus Faecium
+saureus,Staphylococcus Aureus
+kpneumoniae,Klebsiella Pneumoniae
+abaumannii,Acinetobacter Baumannii
+paeruginosa,Pseudomonas Aeruginosa
+enterobacter,Enterobacter
+mtuberculosis,Mycobacterium Tuberculosis
+pfalciparum,Plasmodium Falciparum

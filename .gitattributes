@@ -1,18 +1,37 @@
-*.csv filter=lfs diff=lfs merge=lfs -text
 # Configuration of line breaks, to prevent problems with Linux-Windows format translation
 # Based on https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings
-
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
-
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
 # *.c text
 # *.h text
-
 # Declare files that will always have LF line endings on checkout.
 *.sh text eol=lf
-
 # Denote all files that are truly binary and should not be modified.
 *.png binary
 *.jpg binary
+data/mtuberculosis/mtuberculosis_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/paeruginosa/paeruginosa_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/pfalciparum/pfalciparum_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/saureus/saureus_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/abaumannii/abaumannii_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/efaecium/efaecium_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/enterobacter/enterobacter_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/kpneumoniae/kpneumoniae_binary.csv filter=lfs diff=lfs merge=lfs -text
+data/pfalciparum/pfalciparum_original.csv filter=lfs diff=lfs merge=lfs -text
+data/saureus/saureus_original.csv filter=lfs diff=lfs merge=lfs -text
+data/abaumannii/abaumannii_original.csv filter=lfs diff=lfs merge=lfs -text
+data/efaecium/efaecium_original.csv filter=lfs diff=lfs merge=lfs -text
+data/enterobacter/enterobacter_original.csv filter=lfs diff=lfs merge=lfs -text
+data/kpneumoniae/kpneumoniae_original.csv filter=lfs diff=lfs merge=lfs -text
+data/mtuberculosis/mtuberculosis_original.csv filter=lfs diff=lfs merge=lfs -text
+data/paeruginosa/paeruginosa_original.csv filter=lfs diff=lfs merge=lfs -text
+data/efaecium/efaecium_processed.csv filter=lfs diff=lfs merge=lfs -text
+data/enterobacter/enterobacter_processed.csv filter=lfs diff=lfs merge=lfs -text
+data/kpneumoniae/kpneumoniae_processed.csv filter=lfs diff=lfs merge=lfs -text
+data/mtuberculosis/mtuberculosis_processed.csv filter=lfs diff=lfs merge=lfs -text
+data/paeruginosa/paeruginosa_processed.csv filter=lfs diff=lfs merge=lfs -text
+data/pfalciparum/pfalciparum_processed.csv filter=lfs diff=lfs merge=lfs -text
+data/saureus/saureus_processed.csv filter=lfs diff=lfs merge=lfs -text
+data/abaumannii/abaumannii_processed.csv filter=lfs diff=lfs merge=lfs -text
